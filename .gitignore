@@ -7,3 +7,6 @@
 
 # Production Builds
 */dist
+
+# IDE
+/.vscode
