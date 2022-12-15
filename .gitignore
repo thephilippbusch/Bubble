@@ -1,0 +1,9 @@
+# Environment
+*/venv
+.env
+
+# Node Modules
+*/node_modules
+
+# Production Builds
+*/dist

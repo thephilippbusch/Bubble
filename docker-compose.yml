@@ -1,0 +1,58 @@
+version: "3.7"
+services:
+  database:
+    container_name: postgres-database
+    image: postgres:14.1
+    restart: always
+    environment:
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_PORT=${DATABASE_PORT}
+    expose:
+      - "5432"
+    ports:
+      - "5432:5432"
+    networks:
+      - bubble-network
+    volumes:
+      - db:/var/lib/postgresql/data
+
+  backend:
+    container_name: backend-server
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    command: uvicorn server.main:app --host 0.0.0.0 --port 4000 --reload
+    restart: always
+    expose:
+      - "4000"
+    ports:
+      - "4000:4000"
+    networks:
+      - bubble-network
+    depends_on:
+      - database
+
+  frontend:
+    container_name: solid-js-frontend
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    command: pnpm run dev
+    restart: always
+    expose:
+      - "8080"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - database
+      - backend
+
+volumes:
+  db:
+    driver: local
+
+networks:
+  bubble-network:
+    driver: bridge
