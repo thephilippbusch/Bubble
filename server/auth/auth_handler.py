@@ -23,6 +23,8 @@ def signJWT(uid: str, expires_in: Union[int, None] ) -> Dict[str, str]:
 def decodeJWT(token: str) -> Dict:
   try:
     decoded_token = jwt.decode(token, SERVER_JWT_SECRET, algorithms=[SERVER_JWT_ALGORITHM])
-    return decoded_token if decoded_token["expires"] >= time.time() else None
+    return decoded_token
+    # Use following Return statement to activate expiring:
+    # return decoded_token if decoded_token["expires"] >= time.time() else None
   except:
     return {}

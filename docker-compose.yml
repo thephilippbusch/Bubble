@@ -1,4 +1,5 @@
 version: "3.7"
+
 services:
   database:
     container_name: postgres-database
@@ -41,6 +42,8 @@ services:
       dockerfile: Dockerfile
     command: pnpm run dev
     restart: always
+    volumes:
+      - ./client/src:/home/node/app/src:delegated
     expose:
       - "8080"
     ports:

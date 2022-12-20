@@ -9,3 +9,9 @@ RUN pnpm fetch --dev
 
 ADD . ./
 RUN pnpm install -r
+
+FROM base as production
+
+ENV NODE_PATH=./build
+
+RUN pnpm run build

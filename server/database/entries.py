@@ -1,16 +1,18 @@
 from server.database.database import Database
+from uuid import uuid4
+from sqlalchemy import text
 
 conn = Database.connection()
 
-class Users:
-  def get_user_by_id(uid: str):
+class Entries:
+  def get_entry_by_id(eid: str):
     try:
       query = (f"""
-        SELECT * FROM users
-        WHERE uid = '{uid}';
+        SELECT * FROM entries
+        WHERE eid = '{eid}';
       """)
 
-      res = conn.execute(query)
+      res = conn.execute(query).first()
 
       if res:
         data = dict(res)
@@ -20,33 +22,7 @@ class Users:
         }
       return {
         "successful": False,
-        "error": "No user was found!"
-      }
-    except Exception as e:
-      print(e)
-      return {
-        "successful": False,
-        "error": str(e)
-      }
-  
-  def get_user_by_query(query: str):
-    try:
-      query = (f"""
-        SELECT * FROM users
-        WHERE name LIKE '%{query}%' OR surname LIKE '%{query}%';
-      """)
-
-      res = conn.execute(query)
-
-      if res:
-        data = dict(res)
-        return {
-          "successful": True,
-          "data": data
-        }
-      return {
-        "successful": False,
-        "error": "No users were found!"
+        "error": f"No entry exists with the ID {eid}!"
       }
     except Exception as e:
       print(e)
@@ -55,24 +31,23 @@ class Users:
         "error": str(e)
       }
 
-  def get_users(uid: str):
+  def search_entries(query_string: str):
     try:
       query = (f"""
-        SELECT * FROM users
-        WHERE uid = '{uid}';
+        SELECT * FROM entries
+        WHERE name LIKE '%{query_string}%';
       """)
 
-      res = conn.execute(query)
+      res = conn.execute(text(query)).fetchall()
 
       if res:
-        data = dict(res)
         return {
           "successful": True,
-          "data": data
+          "data": res
         }
       return {
         "successful": False,
-        "error": "No user was found!"
+        "error": f"No entries were found with the search query {query_string}!"
       }
     except Exception as e:
       print(e)
@@ -81,14 +56,15 @@ class Users:
         "error": str(e)
       }
 
-  def create_user(uid: str):
+  def get_list_entries(lid: str):
     try:
       query = (f"""
-        SELECT * FROM users
-        WHERE uid = '{uid}';
+        SELECT e.* FROM list l
+        JOIN entries e ON e.lid = l.lid
+        WHERE l.lid = '{lid}';
       """)
 
-      res = conn.execute(query)
+      res = conn.execute(query).first()
 
       if res:
         data = dict(res)
@@ -98,7 +74,7 @@ class Users:
         }
       return {
         "successful": False,
-        "error": "No user was found!"
+        "error": f"No Entries were found for List {lid}!"
       }
     except Exception as e:
       print(e)
@@ -107,14 +83,15 @@ class Users:
         "error": str(e)
       }
 
-  def update_user(uid: str):
+  def create_entry(lid: str, name: str):
     try:
       query = (f"""
-        SELECT * FROM users
-        WHERE uid = '{uid}';
+        INSERT INTO entries (eid, name, lid)
+        VALUES ('{uuid4()}', '{name}', '{lid}')
+        RETURNING *;
       """)
 
-      res = conn.execute(query)
+      res = conn.execute(query).first()
 
       if res:
         data = dict(res)
@@ -124,7 +101,7 @@ class Users:
         }
       return {
         "successful": False,
-        "error": "No user was found!"
+        "error": f"Entry could not be created"
       }
     except Exception as e:
       print(e)
@@ -133,14 +110,16 @@ class Users:
         "error": str(e)
       }
 
-  def remove_user(uid: str):
+  def update_entry(eid: str, name: str):
     try:
       query = (f"""
-        SELECT * FROM users
-        WHERE uid = '{uid}';
+        UPDATE list
+        SET name = '{name}'
+        WHERE lid = '{eid}'
+        RETURNING *;
       """)
 
-      res = conn.execute(query)
+      res = conn.execute(query).first()
 
       if res:
         data = dict(res)
@@ -150,7 +129,29 @@ class Users:
         }
       return {
         "successful": False,
-        "error": "No user was found!"
+        "error": f"List could not be updated!"
+      }
+    except Exception as e:
+      print(e)
+      return {
+        "successful": False,
+        "error": str(e)
+      }
+
+  def remove_entry(eid: str):
+    try:
+      query = (f"""
+        DELETE FROM entries
+        WHERE eid = '{eid}';
+      """)
+
+      res = conn.execute(query)
+
+      if res:
+        return { "successful": True }
+      return {
+        "successful": False,
+        "error": f"List could not be removed!"
       }
     except Exception as e:
       print(e)

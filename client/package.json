@@ -20,6 +20,10 @@
     "vite-plugin-solid": "^2.3.0"
   },
   "dependencies": {
-    "solid-js": "^1.5.1"
+    "compression": "^1.7.4",
+    "express": "^4.18.2",
+    "solid-icons": "^1.0.4",
+    "solid-js": "^1.5.1",
+    "vite-plugin-ssr": "^0.4.62"
   }
 }

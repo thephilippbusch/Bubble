@@ -1,6 +1,7 @@
 # Environment
 */venv
 .env
+Makefile
 
 # Node Modules
 */node_modules
@@ -10,3 +11,6 @@
 
 # IDE
 .vscode
+
+# Python
+__pycache__/

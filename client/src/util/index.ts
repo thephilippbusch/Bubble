@@ -1,3 +1,3 @@
 // Utility Module Exports
 
-export * from ".";
+export * from "./fetcher";
